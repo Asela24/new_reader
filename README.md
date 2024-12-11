@@ -7,5 +7,11 @@
 2. Запустить локально - `npm run dev`
 
 
-###Versions
+### Versions
 node - 20.10.0
+
+### API
+https://desu.me/help/api/
+
+### Screen breakpoints
+Mobile / tablet  - from 720px;
