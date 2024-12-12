@@ -1,12 +1,12 @@
 import { Footer } from "./Footer/Footer";
-import { MainContent } from "./MainContent/MainContent";
+import { ReadContent } from "../modules/read-content/ReadContent";
 import { NavBar } from "../modules/header-nav/components/NavBar/NavBar";
 
 export const Page = () => {
   return (
     <div>
       <NavBar />
-      <MainContent />
+      <ReadContent />
 
       <Footer />
     </div>
