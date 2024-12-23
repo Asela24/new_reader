@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const useChapter = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<{ response?: { pages?: { list: { img: string }[] } } } | null>(null);
   const [loading, setLoading] = useState(false);
 
   const getData = async () => {
@@ -15,7 +15,7 @@ const useChapter = () => {
       return null;
     }
 
-    const { value, done } = await reader.read();
+    const { value } = await reader.read();
 
     if (value) {
       const result = new TextDecoder("utf-8").decode(value);
@@ -47,8 +47,8 @@ export const ReadContent = () => {
 
   return (
     <div>
-      {imgUrl?.map((imgLink) => (
-        <img src={imgLink} />
+      {imgUrl?.map((imgLink, index) => (
+        <img src={imgLink} key={index}/>
       ))}
     </div>
   );
