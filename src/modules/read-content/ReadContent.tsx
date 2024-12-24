@@ -5,9 +5,7 @@ const useChapter = () => {
   const [loading, setLoading] = useState(false);
 
   const getData = async () => {
-    const result = await fetch("https://desu.win/manga/api/2/chapter/49480", {
-      mode: "no-cors",
-    });
+    const result = await fetch("https://desu.win/manga/api/2/chapter/49480");
 
     const reader = result.body?.getReader();
 
