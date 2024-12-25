@@ -15,3 +15,6 @@ https://desu.me/help/api/
 
 ### Screen breakpoints
 Mobile / tablet  - from 720px;
+
+### Run without CORS
+Linux - google-chrome --user-data-dir="~/chrome-dev-disabled-security" --disable-web-security --disable-site-isolation-trials
