@@ -1,52 +1,46 @@
-import { useEffect, useState } from "react";
-
-const useChapter = () => {
-  const [data, setData] = useState<{ response?: { pages?: { list: { img: string }[] } } } | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const getData = async () => {
-    const result = await fetch("https://desu.win/manga/api/2/chapter/49480")
-
-    const reader = result.body?.getReader();
-
-    if (!reader?.read) {
-      return null;
-    }
-
-    const { value } = await reader.read();
-
-    if (value) {
-      const result = new TextDecoder("utf-8").decode(value);
-      const parsedResult = JSON.parse(result);
-
-      setData(parsedResult);
-      setLoading(false);
-    }
-
-    return null;
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  return { loading, data };
-};
+import { useRef } from "react";
+import { useChapter } from "./utils/use-chapter";
+import { useChapterIdContext } from "../../context/ChapterIdContext";
 
 export const ReadContent = () => {
-  const { data } = useChapter();
+  const pagesRef = useRef<HTMLDivElement | null>(null);
+  const { chapterId } = useChapterIdContext();
+  const { data, loading } = useChapter({
+    id: chapterId ?? 49480,
+  });
   const pages = data?.response?.pages;
+  console.log(data, loading, chapterId);
 
   const imgUrl = pages?.list.map((item) => item.img);
 
-  console.log(imgUrl);
+  const handleScrollToNextPage = (index: number) => {
+    if (!pagesRef.current) return;
 
-  console.log(pages);
+    const images = pagesRef.current.querySelectorAll("img");
+    console.log(pagesRef.current);
+    if (index + 1 < images.length) {
+      images[index + 1].scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
 
+  if (loading && !data?.response) {
+    return (
+        <div className="flex items-center justify-center">
+          <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
+        </div>
+    );
+  }
   return (
-    <div>
+    <div className="flex flex-col items-center" ref={pagesRef}>
       {imgUrl?.map((imgLink, index) => (
-        <img src={imgLink} key={index}/>
+        <img
+          src={imgLink}
+          key={index}
+          onClick={() => handleScrollToNextPage(index)}
+        />
       ))}
     </div>
   );

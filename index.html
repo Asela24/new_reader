@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,5 +9,17 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <link rel="stylesheet" href="/src/index.css" />
+    <script id="__DATA__">
+      console.log('432423')
+      fetch('https://desu.win/manga/api/2/chapter/49480')
+      .then(response => response.json()) 
+      .then(data => {
+        console.log('from index.html')
+       console.log(data);
+       console.log('34');
+      })
+      .catch(error => console.error('Error fetching data:', error));
+    </script>
   </body>
 </html>

@@ -1,7 +1,3 @@
 export const Footer = () => {
-    return (
-        <div> 
-            434
-        </div>
-    )
-}
+  return <div></div>;
+};

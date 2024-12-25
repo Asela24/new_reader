@@ -1,11 +1,17 @@
 import { ChevronLeft } from "./assets/ChevronLeft";
 import { ChevronRight } from "./assets/ChevronRight";
 
-export const Switcher = () => {
+type SwitcherProps = {
+  handleChapterListOpens: () => void;
+};
+
+export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
   return (
     <div className="flex gap-4 items-center text-white">
       <ChevronLeft />
-      1 - 1
+      <div className="cursor-pointer" onClick={handleChapterListOpens}>
+        1 - 1
+      </div>
       <ChevronRight />
     </div>
   );
