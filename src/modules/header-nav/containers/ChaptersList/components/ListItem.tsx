@@ -7,16 +7,20 @@ import { Chapter } from "../utils/use-get-chapters";
 type ListItemProps = {
   chapterInfo: Chapter;
   selected: boolean;
-  handleChapterSelection: (id: number) => void;
+  handleChapterSelection: (id: Chapter) => void;
 };
 
-export const ListItem = ({ chapterInfo, selected, handleChapterSelection }: ListItemProps) => {
+export const ListItem = ({
+  chapterInfo,
+  selected,
+  handleChapterSelection,
+}: ListItemProps) => {
   return (
     <ul
       className={`h-[42px] ${
         selected ? "bg-[#1d78b7]" : "bg-neutral-950"
       } text-white rounded-md flex items-center p-[16px]`}
-      onClick={() => handleChapterSelection(chapterInfo.id)}
+      onClick={() => handleChapterSelection(chapterInfo)}
     >
       Том {chapterInfo.vol}. Глава {chapterInfo.ch}
     </ul>

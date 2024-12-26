@@ -2,3 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+body,html {
+    margin: 0;
+    padding: 0;
+    max-height: 100vh;
+    min-height: 100%;
+    overflow-y: auto;
+}
+* {
+    box-sizing: border-box;
+}
+
+#root {
+    height: 100%;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;    /* Firefox */
+  }
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}

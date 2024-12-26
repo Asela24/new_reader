@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { ListItem } from "./components/ListItem";
-import { useGetChapters } from "./utils/use-get-chapters";
+import { Chapter, useGetChapters } from "./utils/use-get-chapters";
 import { useChapterIdContext } from "../../../../context/ChapterIdContext";
 
 export const ChaptersList = () => {
   const [chapterId, setChapterId] = useState<null | number>(49481);
   const { response } = useGetChapters();
-  const { setChapterId: setIdContext } = useChapterIdContext();
+  const { setChapterId: setIdContext, setChapterInfo } = useChapterIdContext();
 
-  const handleChapterSelection = (id: number) => {
-    setChapterId(id);
-    setIdContext(id);
+  const handleChapterSelection = (chapterInfo: Chapter) => {
+    setChapterId(chapterInfo.id);
+    setIdContext(chapterInfo.id);
+    setChapterInfo(chapterInfo)
   };
 
   return (
