@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const useChapter = ({ id }: { id: number }) => {
+export const useChapter = ({ id, mangaId }: { id: number | null, mangaId: number }) => {
   const [data, setData] = useState<{
     response?: { pages?: { list: { img: string }[] } };
   } | null>(null);
@@ -17,7 +17,7 @@ export const useChapter = ({ id }: { id: number }) => {
       setData(null)
 
       try {
-        const result = await fetch(`https://desu.win/manga/api/2/chapter/${id}`, {
+        const result = await fetch(`https://desu.win/manga/api/${mangaId}/chapter/${id}`, {
           signal: controller.signal,
         });
         if (!result.body) throw new Error("No response body found");

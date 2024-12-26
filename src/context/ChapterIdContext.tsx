@@ -8,7 +8,6 @@ import {
 } from "react";
 import {
   Chapter,
-  ChapterData,
   useGetChapters,
 } from "../modules/header-nav/containers/ChaptersList/utils/use-get-chapters";
 import { useLocation } from "react-router-dom";
@@ -19,6 +18,7 @@ export const ChapterIdContext = createContext<{
   chapterInfo: Chapter | null;
   setChapterInfo: React.Dispatch<React.SetStateAction<Chapter | null>>;
   allChapters: ResponseType;
+  mangaId: number;
 } | null>(null);
 
 export const useChapterIdContext = () => {
@@ -37,8 +37,8 @@ interface ChapterIdProviderProps {
   children: ReactNode;
 }
 
+//TODO: вынести это в верхний компонент чтобы оно не было null (page component)
 const getChapterIdInitalLoading = (pathname: string) => {
-  console.log(location.pathname);
   const volRegex = /vol(\d+)/;
   const cpRegex = /ch(\d+(\.\d+)?)/;
 
@@ -63,7 +63,7 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
 }) => {
   const [chapterId, setChapterId] = useState<number | null>(null);
   const [chapterInfo, setChapterInfo] = useState<Chapter | null>(null);
-  const { getData, response } = useGetChapters();
+  const { getData, response, mangaId, loading } = useGetChapters();
 
   const location = useLocation();
 
@@ -71,17 +71,20 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
     const fetchData = async () => {
       const result = getChapterIdInitalLoading(location.pathname);
 
-      // Assuming getData is an async function, await it if necessary
       await getData();
 
-      const selectedChapter = response?.chapters.list.filter(
-        (chapter) => chapter.ch === result.cp && chapter.vol === result.vol
-      )[0];
-      setChapterId(selectedChapter?.id || null);
+      if (response?.chapters?.list) {
+        const selectedChapter = response.chapters.list.find(
+          (chapter) => chapter.ch === result.cp && chapter.vol === result.vol
+        );
+
+        // Set the selected chapter ID, defaulting to null if not found
+        setChapterId(selectedChapter?.id || null);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [loading]);
 
   return (
     <ChapterIdContext.Provider
@@ -91,6 +94,7 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
         chapterInfo,
         setChapterInfo,
         allChapters: response,
+        mangaId: Number(mangaId),
       }}
     >
       {children}

@@ -24,13 +24,13 @@ const updateVolAndChInPath = ({
 };
 
 export const ChaptersList = () => {
-  const [chapterId, setChapterId] = useState<null | number>(49481);
   const changePath = useNavigate();
 
   const {
     setChapterId: setIdContext,
     setChapterInfo,
     allChapters,
+    chapterId,
   } = useChapterIdContext();
 
   const handleChapterSelection = (chapterInfo: Chapter) => {
@@ -39,8 +39,6 @@ export const ChaptersList = () => {
       newCh: chapterInfo.ch,
       newVol: chapterInfo.vol,
     });
-
-    setChapterId(chapterInfo.id);
     setIdContext(chapterInfo.id);
     setChapterInfo(chapterInfo);
     changePath(updatedUrl);

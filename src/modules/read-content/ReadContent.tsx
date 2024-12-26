@@ -4,12 +4,12 @@ import { useChapterIdContext } from "../../context/ChapterIdContext";
 
 export const ReadContent = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
-  const { chapterId } = useChapterIdContext();
+  const { chapterId, mangaId } = useChapterIdContext();
   const { data, loading } = useChapter({
-    id: chapterId ?? 49480,
+    id: chapterId,
+    mangaId,
   });
   const pages = data?.response?.pages;
-  console.log(data, loading, chapterId);
 
   const imgUrl = pages?.list.map((item) => item.img);
 
