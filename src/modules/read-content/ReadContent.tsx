@@ -17,7 +17,7 @@ export const ReadContent = () => {
     if (!pagesRef.current) return;
 
     const images = pagesRef.current.querySelectorAll("img");
-    console.log(pagesRef.current);
+
     if (index + 1 < images.length) {
       images[index + 1].scrollIntoView({
         behavior: "smooth",

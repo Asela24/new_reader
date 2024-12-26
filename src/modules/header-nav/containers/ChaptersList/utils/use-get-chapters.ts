@@ -1,21 +1,30 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 //TODO: check why we have 2 requests
+export type ChapterFullInfo = {
+  ch: number;
+  title: number;
+  id: number;
+  vol: 2;
+  nextChapterId: number;
+  prevChapterId: number;
+};
+
 export type Chapter = {
-    ch: number,
-    title: number,
-    id: number,
-    vol: 2,
+  ch: number;
+  title: number;
+  id: number;
+  vol: number;
+};
+
+export interface ChapterData {
+  response: {
+    chapters: {
+      list: Chapter[];
+    };
+  };
 }
 
 export const useGetChapters = () => {
-  interface ChapterData {
-    response: {
-      chapters: {
-        list: Chapter[];
-      };
-    };
-  }
-
   const [data, setData] = useState<ChapterData | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -39,9 +48,6 @@ export const useGetChapters = () => {
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
 
-  return { response: data?.response };
+  return { response: data?.response, getData, loading };
 };

@@ -9,6 +9,7 @@ export const useChapter = ({ id }: { id: number }) => {
 
   useEffect(() => {
     let isMounted = true;
+    const controller = new AbortController()
 
     const getData = async () => {
       setLoading(true);
@@ -16,7 +17,9 @@ export const useChapter = ({ id }: { id: number }) => {
       setData(null)
 
       try {
-        const result = await fetch(`https://desu.win/manga/api/2/chapter/${id}`);
+        const result = await fetch(`https://desu.win/manga/api/2/chapter/${id}`, {
+          signal: controller.signal,
+        });
         if (!result.body) throw new Error("No response body found");
 
         const reader = result.body.getReader();
@@ -63,6 +66,7 @@ export const useChapter = ({ id }: { id: number }) => {
     // Cleanup function to set `isMounted` to false
     return () => {
       isMounted = false;
+      controller.abort()
     };
   }, [id]);
 

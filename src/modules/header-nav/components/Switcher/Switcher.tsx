@@ -8,6 +8,7 @@ type SwitcherProps = {
 
 export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
   const { chapterInfo } = useChapterIdContext();
+  
   return (
     <div className="flex gap-4 items-center text-white">
       <ChevronLeft />
