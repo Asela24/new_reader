@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useChapter } from "./utils/use-chapter";
-import { useChapterIdContext } from "../../context/ChapterIdContext";
+import { useChapterIdContext } from "../../context/useChapterIdContext";
+import { ImageItem } from "./components/ImageItem/ImageItem";
 
 export const ReadContent = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
@@ -20,7 +21,7 @@ export const ReadContent = () => {
 
     if (index + 1 < images.length) {
       images[index + 1].scrollIntoView({
-        behavior: "smooth",
+        behavior: "auto",
         block: "start",
       });
     }
@@ -28,18 +29,20 @@ export const ReadContent = () => {
 
   if (loading && !data?.response) {
     return (
-        <div className="flex items-center justify-center">
-          <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-        </div>
+      <div className="flex items-center justify-center">
+        <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
+      </div>
     );
   }
+
   return (
     <div className="flex flex-col items-center" ref={pagesRef}>
       {imgUrl?.map((imgLink, index) => (
-        <img
-          src={imgLink}
+        <ImageItem
+          link={imgLink}
+          index={index}
           key={index}
-          onClick={() => handleScrollToNextPage(index)}
+          handleScrollToNextPage={handleScrollToNextPage}
         />
       ))}
     </div>

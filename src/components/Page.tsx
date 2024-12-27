@@ -1,8 +1,9 @@
 import { Footer } from "./Footer/Footer";
 import { NavBar } from "../modules/header-nav/components/NavBar/NavBar";
 import { MainContent } from "./MainContent/MainContent";
-import { ChapterIdProvider } from "../context/ChapterIdContext";
+
 import { BrowserRouter } from "react-router-dom";
+import { ChapterIdProvider } from "../context/ChapterIdProvider";
 
 export const Page = () => {
   return (

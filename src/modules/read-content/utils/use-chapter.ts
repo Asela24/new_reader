@@ -1,25 +1,39 @@
 import { useEffect, useState } from "react";
 
-export const useChapter = ({ id, mangaId }: { id: number | null, mangaId: number }) => {
+export const useChapter = ({
+  id,
+  mangaId,
+}: {
+  id: number | null;
+  mangaId: number;
+}) => {
   const [data, setData] = useState<{
     response?: { pages?: { list: { img: string }[] } };
   } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController()
+    const controller = new AbortController();
 
     const getData = async () => {
+      if (!id) {
+        return;
+      }
+
       setLoading(true);
       setError(null);
-      setData(null)
+      setData(null);
+
 
       try {
-        const result = await fetch(`https://desu.win/manga/api/${mangaId}/chapter/${id}`, {
-          signal: controller.signal,
-        });
+        const result = await fetch(
+          `https://desu.win/manga/api/${mangaId}/chapter/${id}`,
+          {
+            signal: controller.signal,
+          }
+        );
         if (!result.body) throw new Error("No response body found");
 
         const reader = result.body.getReader();
@@ -66,9 +80,9 @@ export const useChapter = ({ id, mangaId }: { id: number | null, mangaId: number
     // Cleanup function to set `isMounted` to false
     return () => {
       isMounted = false;
-      controller.abort()
+      controller.abort();
     };
-  }, [id]);
+  }, [id, mangaId]);
 
   return { loading, data, error };
 };

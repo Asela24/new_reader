@@ -30,12 +30,13 @@ const getMangaId = (url: string) => {
   const match = url.match(regex);
 
   if (!match) {
-    throw new Error('no such manga')
+    throw new Error("no such manga");
   }
 
   return match[2];
 };
 
+//TODO: rename to get manga info
 export const useGetChapters = () => {
   const [data, setData] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,22 +44,53 @@ export const useGetChapters = () => {
   const mangaId = getMangaId(location.pathname);
 
   const getData = async () => {
-    const result = await fetch(`https://desu.win/manga/api/${mangaId}`);
+    let isMounted = true;
 
-    const reader = result.body?.getReader();
+    try {
+      const result = await fetch(`https://desu.win/manga/api/${mangaId}`);
 
-    if (!reader?.read) {
-      return null;
+      if (!result.body) throw new Error("No response body found");
+
+      const reader = result.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let accumulatedString = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+
+        if (value) {
+          accumulatedString += decoder.decode(value, { stream: true });
+
+          try {
+            const parsedResult = JSON.parse(accumulatedString);
+
+            if (isMounted) {
+              setData(parsedResult);
+            }
+          } catch {
+            if (!done) {
+              console.log("Waiting for more chunks to parse JSON...");
+            }
+          }
+        }
+
+        if (done) break;
+      }
+
+      if (isMounted) {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+
+      if (isMounted) {
+        setLoading(false);
+      }
     }
 
-    const { value } = await reader.read();
-    if (value) {
-      const result = new TextDecoder("utf-8").decode(value);
-      const parsedResult = JSON.parse(result);
-
-      setData(parsedResult);
-      setLoading(false);
-    }
+    return () => {
+      isMounted = false;
+    };
   };
 
   return { response: data?.response, getData, loading, mangaId };

@@ -16,16 +16,13 @@ export const ListItem = ({
   handleChapterSelection,
 }: ListItemProps) => {
   return (
-    <ul
+    <li
       className={`h-[42px] ${
         selected ? "bg-[#1d78b7]" : "bg-neutral-950"
       } text-white rounded-md flex items-center p-[16px]`}
       onClick={() => handleChapterSelection(chapterInfo)}
     >
       Том {chapterInfo.vol}. Глава {chapterInfo.ch}
-    </ul>
+    </li>
   );
 };
-
-//То1 - Глава 389
-//#1d78b7;

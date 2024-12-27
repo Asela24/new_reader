@@ -1,4 +1,4 @@
-import { useChapterIdContext } from "../../../../context/ChapterIdContext";
+import { useChapterIdContext } from "../../../../context/useChapterIdContext";
 import { ChevronLeft } from "./assets/ChevronLeft";
 import { ChevronRight } from "./assets/ChevronRight";
 
@@ -8,7 +8,7 @@ type SwitcherProps = {
 
 export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
   const { chapterInfo } = useChapterIdContext();
-  
+
   return (
     <div className="flex gap-4 items-center text-white">
       <ChevronLeft />

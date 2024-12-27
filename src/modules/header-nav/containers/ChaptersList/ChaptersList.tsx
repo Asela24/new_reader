@@ -1,8 +1,7 @@
-import { useState } from "react";
-
+import { useChapterIdContext } from "../../../../context/useChapterIdContext";
 import { ListItem } from "./components/ListItem";
 import { Chapter } from "./utils/use-get-chapters";
-import { useChapterIdContext } from "../../../../context/ChapterIdContext";
+
 import { useNavigate } from "react-router-dom";
 
 const updateVolAndChInPath = ({
@@ -45,7 +44,7 @@ export const ChaptersList = () => {
   };
 
   return (
-    <li className="text-white max-h-[25vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer">
+    <ul className="text-white max-h-[25vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer">
       {allChapters?.chapters.list.map((chapter) => (
         <ListItem
           chapterInfo={chapter}
@@ -54,6 +53,6 @@ export const ChaptersList = () => {
           handleChapterSelection={handleChapterSelection}
         />
       ))}
-    </li>
+    </ul>
   );
 };
