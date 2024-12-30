@@ -29,6 +29,7 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
   children,
 }) => {
   const changePath = useNavigate();
+  const location = useLocation();
   const [chapterId, setChapterId] = useState<number | null>(null);
   const [chapterInfo, setChapterInfo] = useState<Chapter | null>(null);
   const [nextChapter, setNextChapter] = useState<Chapter | null>(null);
@@ -36,17 +37,13 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
 
   const { getData, response, mangaId, loading } = useGetChapters();
 
-  const location = useLocation();
-
-  console.log(loading);
-
   useEffect(() => {
     const fetchData = async () => {
       await getData();
     };
 
     fetchData();
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!response?.chapters.list) return;
@@ -64,7 +61,7 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
       setChapterId(selectedChapter.id);
       setChapterInfo(selectedChapter)
     }
-  }, [loading]);
+  }, [loading, location.pathname]);
 
   const handleChapterChange = (newChapter: Chapter) => {
     const updatedUrl = updateVolAndChUrl({
