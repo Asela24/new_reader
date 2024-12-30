@@ -21,6 +21,7 @@ export const ListItem = ({
         selected ? "bg-[#1d78b7]" : "bg-neutral-950"
       } text-white rounded-md flex items-center p-[16px]`}
       onClick={() => handleChapterSelection(chapterInfo)}
+      data-selected={chapterInfo.id}
     >
       Том {chapterInfo.vol}. Глава {chapterInfo.ch}
     </li>
