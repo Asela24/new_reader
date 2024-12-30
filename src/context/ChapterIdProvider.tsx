@@ -1,10 +1,11 @@
 import { ReactNode, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Chapter,
   useGetChapters,
 } from "../modules/header-nav/containers/ChaptersList/utils/use-get-chapters";
 import { ChapterIdContext } from "./ChapterIdContext";
+import { updateVolAndChUrl } from "../modules/header-nav/utils/update-vol-and-ch-url";
 
 interface ChapterIdProviderProps {
   children: ReactNode;
@@ -27,8 +28,14 @@ const getChapterIdInitalLoading = (pathname: string) => {
 export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
   children,
 }) => {
+  const changePath = useNavigate();
   const [chapterId, setChapterId] = useState<number | null>(null);
   const [chapterInfo, setChapterInfo] = useState<Chapter | null>(null);
+  const [nextChapter, setNextChapter] = useState<Chapter | null>(null);
+  const [prevChapter, setPrevChapter] = useState<Chapter | null>(null);
+
+  console.log(nextChapter)
+
   const { getData, response, mangaId, loading } = useGetChapters();
 
   const location = useLocation();
@@ -60,6 +67,17 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
     }
   }, [loading]);
 
+  const handleChapterChange = (newChapter: Chapter) => {
+    const updatedUrl = updateVolAndChUrl({
+      url: location.pathname,
+      newCh: newChapter.ch,
+      newVol: newChapter.vol,
+    });
+    setChapterId(newChapter.id);
+    setChapterInfo(newChapter);
+    changePath(updatedUrl);
+  };
+
   return (
     <ChapterIdContext.Provider
       value={{
@@ -69,6 +87,11 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
         setChapterInfo,
         allChapters: response,
         mangaId: Number(mangaId),
+        setNextChapter,
+        setPreviousChapter: setPrevChapter,
+        prevChapter,
+        nextChapter,
+        handleChapterChange,
       }}
     >
       {children}

@@ -1,4 +1,15 @@
 import { useEffect, useState } from "react";
+import { Chapter } from "../../header-nav/containers/ChaptersList/utils/use-get-chapters";
+
+type ChapterPages = {
+  response?: {
+    pages?: {
+      list: { img: string }[];
+      ch_prev: Chapter;
+      ch_next: Chapter;
+    };
+  };
+};
 
 export const useChapter = ({
   id,
@@ -7,9 +18,7 @@ export const useChapter = ({
   id: number | null;
   mangaId: number;
 }) => {
-  const [data, setData] = useState<{
-    response?: { pages?: { list: { img: string }[] } };
-  } | null>(null);
+  const [data, setData] = useState<ChapterPages | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +34,6 @@ export const useChapter = ({
       setLoading(true);
       setError(null);
       setData(null);
-
 
       try {
         const result = await fetch(
