@@ -13,11 +13,19 @@ export const NavBar = () => {
     setChapterListShow((value) => !value);
   };
 
+  const handleBackHome = () => {
+    const current = window.location.href;
+
+    window.location.href = current.split("/vol")[0];
+  };
+
   return (
     <nav className="bg-black">
       <div className="flex justify-between items-center p-2">
         <div className="flex gap-5 items-center">
-          <HouseIcon />
+          <button onClick={() => handleBackHome()}>
+            <HouseIcon />
+          </button>
           <WarningIcon />
         </div>
 
@@ -29,10 +37,7 @@ export const NavBar = () => {
         </div>
       </div>
 
-     {chapterListShow && <ChaptersList />}
+      {chapterListShow && <ChaptersList />}
     </nav>
   );
 };
-//color black
-// height - 40px but auto
-//

@@ -10,7 +10,7 @@ export const ChaptersList = () => {
   };
 
   return (
-    <ul className="text-white max-h-[25vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer">
+    <ul className="text-white max-h-[40vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer">
       {allChapters?.chapters.list.map((chapter) => (
         <ListItem
           chapterInfo={chapter}

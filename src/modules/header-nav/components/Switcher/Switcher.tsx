@@ -2,7 +2,7 @@ import { useChapterIdContext } from "../../../../context/useChapterIdContext";
 import { Chapter } from "../../containers/ChaptersList/utils/use-get-chapters";
 import { ChevronLeft } from "./assets/ChevronLeft";
 import { ChevronRight } from "./assets/ChevronRight";
-
+//TODO: add some loader and think about errors and edges
 type SwitcherProps = {
   handleChapterListOpens: () => void;
 };
@@ -26,7 +26,7 @@ export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
         <ChevronLeft />
       </button>
       <div className="cursor-pointer" onClick={handleChapterListOpens}>
-        {chapterInfo ? `${chapterInfo.vol} - ${chapterInfo.ch}` : "1 - 1"}
+        {chapterInfo ? `${chapterInfo.vol} - ${chapterInfo.ch}` : null}
       </div>
       <button
         className="bg-none"

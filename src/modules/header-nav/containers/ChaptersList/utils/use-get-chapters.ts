@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-//TODO: check why we have 2 requests
+
 export type ChapterFullInfo = {
   ch: number;
   title: number;
@@ -36,7 +36,6 @@ const getMangaId = (url: string) => {
   return match[2];
 };
 
-//TODO: rename to get manga info
 export const useGetChapters = () => {
   const [data, setData] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
