@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useChapter } from "./utils/use-chapter";
 import { useChapterIdContext } from "../../context/useChapterIdContext";
 import { ImageItem } from "./components/ImageItem/ImageItem";
-
+//action => url change => take all these actions on url change
 export const ReadContent = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
   const { chapterId, mangaId, setNextChapter, setPreviousChapter } =
@@ -11,6 +11,7 @@ export const ReadContent = () => {
     id: chapterId,
     mangaId,
   });
+
   const pages = data?.response?.pages;
 
   const imgUrl = pages?.list.map((item) => item.img);
@@ -28,6 +29,8 @@ export const ReadContent = () => {
     }
   };
 
+  //TODO: Change this awful use effects
+  // TODO: we can set it on load
   useEffect(() => {
     if (!loading) {
       setNextChapter(data?.response?.pages?.ch_next ?? null);
@@ -40,16 +43,8 @@ export const ReadContent = () => {
     }
   }, [loading, data?.response?.pages?.ch_prev, setPreviousChapter]);
 
-  if (loading && !data?.response) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col items-center" ref={pagesRef}>
+    <div className="flex-col items-center w-full" ref={pagesRef}>
       {imgUrl?.map((imgLink, index) => (
         <ImageItem
           link={imgLink}

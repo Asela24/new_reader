@@ -8,7 +8,7 @@ import { ChapterIdProvider } from "../context/ChapterIdProvider";
 export const Page = () => {
   return (
     <BrowserRouter>
-      <div className="h-[100vh] flex flex-col">
+      <div className="h-[100%] flex flex-col">
         <ChapterIdProvider>
           <NavBar />
           <MainContent />
