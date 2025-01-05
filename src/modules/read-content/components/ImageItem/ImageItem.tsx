@@ -5,6 +5,7 @@ type Props = {
   handleScrollToNextPage: (index: number) => void;
   handleScrollToPreviousPage: (index: number) => void;
   index: number;
+  onLoad: () => void;
 };
 
 export const ImageItem = ({
@@ -12,17 +13,23 @@ export const ImageItem = ({
   index,
   handleScrollToNextPage,
   handleScrollToPreviousPage,
+  onLoad,
 }: Props) => {
   const [loaded, setLoaded] = useState(false);
 
+  const handleOnLoad = () => {
+    onLoad();
+    setLoaded(true);
+  };
+
   return (
-    <div className="w-full relative h-auto flex items-center justify-center aspect-[50/73]">
+    <div className="w-full relative h-auto flex items-center justify-center">
       <img
-        onLoad={() => setLoaded(true)}
+        onLoad={handleOnLoad}
         fetchPriority={`${index === 0 ? "high" : "auto"}`}
         src={link}
         onClick={() => handleScrollToNextPage(index)}
-        className={`w-full h-auto aspect-[50/73] ${loaded ? null : "hidden"}`}
+        className={`w-full h-auto ${loaded ? "z-10" : "invisible"}`}
       />
       <div
         onClick={() => handleScrollToPreviousPage(index)}
@@ -30,10 +37,6 @@ export const ImageItem = ({
           loaded ? null : "hidden"
         } w-[30%]`}
       />
-
-      <div className={`${loaded ? "hidden" : "flex"}`}>
-        <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-      </div>
     </div>
   );
 };
