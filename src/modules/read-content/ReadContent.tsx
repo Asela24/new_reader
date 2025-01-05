@@ -29,6 +29,18 @@ export const ReadContent = () => {
     }
   };
 
+  const handleScrollToPreviousPage = (index: number) => {
+    if (!pagesRef.current) return;
+
+    const images = pagesRef.current.querySelectorAll("img");
+
+    if (index - 1 >= 0) {
+      images[index - 1].scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    }
+  };
   //TODO: Change this awful use effects
   // TODO: we can set it on load
   useEffect(() => {
@@ -47,6 +59,7 @@ export const ReadContent = () => {
     <div className="flex-col items-center w-full" ref={pagesRef}>
       {imgUrl?.map((imgLink, index) => (
         <ImageItem
+          handleScrollToPreviousPage={handleScrollToPreviousPage}
           link={imgLink}
           index={index}
           key={index}
