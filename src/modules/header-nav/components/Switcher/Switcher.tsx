@@ -11,8 +11,11 @@ export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
   const { chapterInfo, nextChapter, handleChapterChange, prevChapter } =
     useChapterIdContext();
 
-  const handleChapterChangeClick = (chapter: Chapter | null) => {
-    if (!chapter) return;
+  const emptyPrevChapter = !prevChapter || prevChapter === -1;
+  const emptyNextChapter = !nextChapter || nextChapter === -1;
+
+  const handleChapterChangeClick = (chapter: Chapter | null | -1) => {
+    if (!chapter || chapter === -1) return;
 
     handleChapterChange(chapter);
   };
@@ -20,19 +23,25 @@ export const Switcher = ({ handleChapterListOpens }: SwitcherProps) => {
   return (
     <div className="flex gap-4 items-center text-white">
       <button
-        className="bg-none"
+        className="bg-none hover:bg-[#1d78b7] py-1.5 px-1.5 rounded-full"
         onClick={() => handleChapterChangeClick(prevChapter)}
+        disabled={emptyPrevChapter}
       >
-        <ChevronLeft />
+        <ChevronLeft fill={emptyPrevChapter ? "grey" : undefined} />
       </button>
       <div className="cursor-pointer" onClick={handleChapterListOpens}>
-        {chapterInfo ? `${chapterInfo.vol} - ${chapterInfo.ch}` : null}
+        {chapterInfo ? (
+          `${chapterInfo.vol} - ${chapterInfo.ch}`
+        ) : (
+          <span className="block w-20 h-5 bg-[#1d78b7] animate-pulse rounded-full"></span>
+        )}
       </div>
       <button
-        className="bg-none"
+        className="bg-none hover:bg-[#1d78b7] py-1.5 px-1.5 rounded-full"
+        disabled={emptyNextChapter}
         onClick={() => handleChapterChangeClick(nextChapter)}
       >
-        <ChevronRight />
+        <ChevronRight fill={emptyNextChapter ? "grey" : undefined} />
       </button>
     </div>
   );

@@ -1,10 +1,10 @@
-export const ChevronLeft = () => {
+export const ChevronLeft = (props: React.SVGAttributes<SVGSVGElement>) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
-      fill="white"
+      fill={props.fill ?? "white"}
       className="bi bi-chevron-compact-left"
       viewBox="0 0 16 16"
     >
