@@ -1,10 +1,12 @@
 import { useRef } from "react";
 import { useChapter } from "./utils/use-chapter";
 import { ImageItem } from "./components/ImageItem/ImageItem";
+import { useChapterIdContext } from "../../context/useChapterIdContext";
 //action => url change => take all these actions on url change
 export const ReadContent = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
   const { data } = useChapter();
+  const { nextChapter, handleChapterChange } = useChapterIdContext();
 
   const pages = data?.response?.pages;
   const imgUrl = pages?.list.map((item) => item.img);
@@ -19,6 +21,12 @@ export const ReadContent = () => {
         behavior: "auto",
         block: "start",
       });
+    }
+
+    if (index + 1 >= images.length) {
+      if (!nextChapter || nextChapter === -1) return;
+
+      handleChapterChange(nextChapter);
     }
   };
 
