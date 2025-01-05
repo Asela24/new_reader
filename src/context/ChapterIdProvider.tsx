@@ -32,8 +32,8 @@ export const ChapterIdProvider: React.FC<ChapterIdProviderProps> = ({
   const location = useLocation();
   const [chapterId, setChapterId] = useState<number | null>(null);
   const [chapterInfo, setChapterInfo] = useState<Chapter | null>(null);
-  const [nextChapter, setNextChapter] = useState<Chapter | null>(null);
-  const [prevChapter, setPrevChapter] = useState<Chapter | null>(null);
+  const [nextChapter, setNextChapter] = useState<Chapter | null | -1>(null);
+  const [prevChapter, setPrevChapter] = useState<Chapter | null | -1>(null);
 
   const { getData, response, mangaId, loading } = useGetChapters();
 

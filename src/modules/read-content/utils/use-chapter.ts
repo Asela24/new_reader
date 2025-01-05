@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Chapter } from "../../header-nav/containers/ChaptersList/utils/use-get-chapters";
+import { useChapterIdContext } from "../../../context/useChapterIdContext";
 
 type ChapterPages = {
   response?: {
@@ -11,13 +12,8 @@ type ChapterPages = {
   };
 };
 
-export const useChapter = ({
-  id,
-  mangaId,
-}: {
-  id: number | null;
-  mangaId: number;
-}) => {
+export const useChapter = () => {
+  const { setNextChapter, setPreviousChapter, mangaId, chapterId } = useChapterIdContext();
   const [data, setData] = useState<ChapterPages | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +23,7 @@ export const useChapter = ({
     const controller = new AbortController();
 
     const getData = async () => {
-      if (!id) {
+      if (!chapterId) {
         return;
       }
 
@@ -37,7 +33,7 @@ export const useChapter = ({
 
       try {
         const result = await fetch(
-          `https://desu.win/manga/api/${mangaId}/chapter/${id}`,
+          `https://desu.win/manga/api/${mangaId}/chapter/${chapterId}`,
           {
             signal: controller.signal,
           }
@@ -55,10 +51,14 @@ export const useChapter = ({
             accumulatedString += decoder.decode(value, { stream: true });
 
             try {
-              const parsedResult = JSON.parse(accumulatedString);
+              const parsedResult: ChapterPages = JSON.parse(accumulatedString);
 
               if (isMounted) {
                 setData(parsedResult);
+                setNextChapter(parsedResult.response?.pages?.ch_next ?? null);
+                setPreviousChapter(
+                  parsedResult?.response?.pages?.ch_prev ?? null
+                );
               }
             } catch {
               if (!done) {
@@ -90,7 +90,7 @@ export const useChapter = ({
       isMounted = false;
       controller.abort();
     };
-  }, [id, mangaId]);
+  }, [chapterId, mangaId]);
 
   return { loading, data, error };
 };
