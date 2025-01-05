@@ -16,7 +16,7 @@ export const ImageItem = ({ link, index, handleScrollToNextPage }: Props) => {
         fetchPriority={`${index === 0 ? "high" : "auto"}`}
         src={link}
         onClick={() => handleScrollToNextPage(index)}
-        className={`w-full h-auto aspect-[50/73]`}
+        className={`w-full h-auto aspect-[50/73] ${loaded ? null : "hidden"}`}
       />
 
       <div className={`${loaded ? "hidden" : "flex"}`}>
