@@ -3,18 +3,18 @@ import { NavBar } from "../modules/header-nav/components/NavBar/NavBar";
 import { MainContent } from "./MainContent/MainContent";
 
 import { BrowserRouter } from "react-router-dom";
-import { ChapterIdProvider } from "../context/ChapterIdProvider";
+import { ChapterIdProvider } from "../context/chapter-id/ChapterIdProvider";
 
 export const Page = () => {
   return (
-    <BrowserRouter>
-      <div className="h-[100%] flex flex-col">
+    <div className="h-[100%] flex flex-col">
+      <BrowserRouter>
         <ChapterIdProvider>
           <NavBar />
           <MainContent />
         </ChapterIdProvider>
         <Footer />
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </div>
   );
 };

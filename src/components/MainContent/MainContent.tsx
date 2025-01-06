@@ -1,3 +1,4 @@
+import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
 import { ReadContent } from "../../modules/read-content/ReadContent";
 
 export const MainContent = () => {
@@ -11,7 +12,7 @@ export const MainContent = () => {
   //   });
   // };
   return (
-    <div className="bg-neutral-800 flex justify-center grow">
+    <div className="flex justify-center grow">
       {/* <div key={cookies.read_theme}>
         <input
           type="checkbox"
@@ -22,7 +23,7 @@ export const MainContent = () => {
         />
         <label>Поменять тему</label>
       </div> */}
-      <ReadContent />
+      <ReadContent/>
     </div>
   );
 };
