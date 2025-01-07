@@ -4,6 +4,7 @@ import { ImageItem } from "./components/ImageItem/ImageItem";
 import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
 import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
 import { useLocation } from "react-router-dom";
+import { trackWindowScroll } from "react-lazy-load-image-component";
 // import { useLocation, useNavigate } from "react-router-dom";
 
 // const getHash = (hash: string) => {
@@ -18,21 +19,22 @@ import { useLocation } from "react-router-dom";
 //action => url change => take all these actions on url change
 // add hashing scroll to the page
 // change loading
-export const ReadContent = () => {
+const ReadContentBase = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
   const imagesLoading = useRef(0);
-  const { data } = useChapter();
+  const { data, loading } = useChapter();
   const { nextChapter } = useChapterIdContext();
   const location = useLocation();
   const handleChapterChange = useHandleChapterChange();
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  const pages = data?.response?.pages;
-  const imgUrl = pages?.list.map((item) => item.img);
+  const images = data?.response?.pages?.list;
 
   useEffect(() => {
-    setAllImagesLoaded(false);
-  }, [imgUrl]);
+    if (!loading) {
+      setAllImagesLoaded(true);
+    }
+  }, [loading]);
 
   // useEffect(() => {
   //   if (!imgUrl?.length || !pagesRef.current) return;
@@ -51,10 +53,10 @@ export const ReadContent = () => {
   // }, [imgUrl]);
 
   const trackImageLoading = () => {
-    if (!imgUrl?.length) return;
+    if (!images?.length) return;
     imagesLoading.current += 1;
 
-    if (imagesLoading.current === imgUrl.length - 1) {
+    if (imagesLoading.current === images.length - 1) {
       setAllImagesLoaded(true);
     }
   };
@@ -93,11 +95,12 @@ export const ReadContent = () => {
 
   return (
     <div className="flex-col items-center w-full" ref={pagesRef}>
-      {imgUrl?.map((imgLink, index) => (
+      {images?.map((imgLink, index) => (
         <ImageItem
           onLoad={trackImageLoading}
           handleScrollToPreviousPage={handleScrollToPreviousPage}
-          link={imgLink}
+          link={imgLink.img}
+          info={imgLink}
           index={index}
           key={index}
           handleScrollToNextPage={handleScrollToNextPage}
@@ -110,3 +113,5 @@ export const ReadContent = () => {
     </div>
   );
 };
+
+export const ReadContent = trackWindowScroll(ReadContentBase)

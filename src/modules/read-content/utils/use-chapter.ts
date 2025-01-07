@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { Chapter } from "../../header-nav/containers/ChaptersList/utils/use-get-chapters";
 import { useChapterIdContext } from "../../../context/chapter-id/useChapterIdContext";
+import { ImageType } from "../components/ImageItem/ImageItem";
 
 type ChapterPages = {
   response?: {
     pages?: {
-      list: { img: string }[];
+      list: ImageType[];
       ch_prev: Chapter;
       ch_next: Chapter;
     };
