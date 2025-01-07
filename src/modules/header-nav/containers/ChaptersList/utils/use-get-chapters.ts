@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
-
+import { ChapterResponseType } from "../../../../../context/chapter-id/ChapterIdContext";
+//TODO: move hook higher
 export type ChapterFullInfo = {
   ch: number;
   title: number;
@@ -18,14 +18,11 @@ export type Chapter = {
 };
 
 export interface ChapterData {
-  response: {
-    chapters: {
-      list: Chapter[];
-    };
-  };
+  response: ChapterResponseType
 }
 
-const getMangaId = (url: string) => {
+//move out of this file
+export const getMangaId = (url: string) => {
   const regex = /manga\/([a-zA-Z0-9-]+)\.(\d+)/;
   const match = url.match(regex);
 
@@ -39,7 +36,6 @@ const getMangaId = (url: string) => {
 export const useGetChapters = () => {
   const [data, setData] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
   const mangaId = getMangaId(location.pathname);
 
   const getData = async () => {

@@ -1,4 +1,3 @@
-import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
 import { ReadContent } from "../../modules/read-content/ReadContent";
 
 export const MainContent = () => {
