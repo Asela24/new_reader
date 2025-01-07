@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Chapter } from "../../header-nav/containers/ChaptersList/utils/use-get-chapters";
-import { useChapterIdContext } from "../../../context/useChapterIdContext";
+import { useChapterIdContext } from "../../../context/chapter-id/useChapterIdContext";
 
 type ChapterPages = {
   response?: {

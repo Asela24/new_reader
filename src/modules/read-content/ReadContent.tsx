@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChapter } from "./utils/use-chapter";
 import { ImageItem } from "./components/ImageItem/ImageItem";
-import { useChapterIdContext } from "../../context/useChapterIdContext";
+import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
+import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
+import { useLocation } from "react-router-dom";
 // import { useLocation, useNavigate } from "react-router-dom";
 
 // const getHash = (hash: string) => {
@@ -14,15 +16,23 @@ import { useChapterIdContext } from "../../context/useChapterIdContext";
 // };
 
 //action => url change => take all these actions on url change
+// add hashing scroll to the page
+// change loading
 export const ReadContent = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
   const imagesLoading = useRef(0);
   const { data } = useChapter();
-  const { nextChapter, handleChapterChange } = useChapterIdContext();
+  const { nextChapter } = useChapterIdContext();
+  const location = useLocation();
+  const handleChapterChange = useHandleChapterChange();
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const pages = data?.response?.pages;
   const imgUrl = pages?.list.map((item) => item.img);
+
+  useEffect(() => {
+    setAllImagesLoaded(false);
+  }, [imgUrl]);
 
   // useEffect(() => {
   //   if (!imgUrl?.length || !pagesRef.current) return;
@@ -64,7 +74,7 @@ export const ReadContent = () => {
     if (index + 1 >= images.length) {
       if (!nextChapter || nextChapter === -1) return;
 
-      handleChapterChange(nextChapter);
+      handleChapterChange(nextChapter, location.pathname);
     }
   };
 
@@ -95,11 +105,7 @@ export const ReadContent = () => {
       ))}
 
       {!allImagesLoaded && (
-        <div
-          className={`fixed top-[50%] left-[50%] h-full min-h-[700px] justify-center items-center w-full`}
-        >
-          <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-        </div>
+        <div className="spinner w-12 h-12 top-0 bottom-0 left-0 right-0 fixed m-auto rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
       )}
     </div>
   );
