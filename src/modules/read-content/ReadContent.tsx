@@ -1,76 +1,48 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useChapter } from "./utils/use-chapter";
 import { ImageItem } from "./components/ImageItem/ImageItem";
 import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
 import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { trackWindowScroll } from "react-lazy-load-image-component";
-// import { useLocation, useNavigate } from "react-router-dom";
 
-// const getHash = (hash: string) => {
-//   const regex = /=.*?(\d+)/;
-//   const match = hash.match(regex);
+const getHash = (hash: string) => {
+  const regex = /=.*?(\d+)/;
+  const match = hash.match(regex);
 
-//   if (match) {
-//     return Number(match[1]);
-//   }
-// };
+  if (match?.[1]) {
+    return Number(match[1]);
+  }
 
-//action => url change => take all these actions on url change
-// add hashing scroll to the page
-// change loading
+  return null;
+};
+
+export const ImageLoader = () => (
+  <div className={`fixed z-10 h-full`}>
+    <div className="flex justify-center flex-col h-full">
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce"></div>
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+    </div>
+  </div>
+);
+
 const ReadContentBase = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
-  const imagesLoading = useRef(0);
-  const { data, loading } = useChapter();
-  const { nextChapter } = useChapterIdContext();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { data } = useChapter();
+  const { nextChapter } = useChapterIdContext();
   const handleChapterChange = useHandleChapterChange();
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const images = data?.response?.pages?.list;
 
-  useEffect(() => {
-    if (!loading) {
-      setAllImagesLoaded(true);
-    }
-  }, [loading]);
-
-  // useEffect(() => {
-  //   if (!imgUrl?.length || !pagesRef.current) return;
-
-  //   const currentHash = getHash(location.hash);
-  //   const images = pagesRef.current.querySelectorAll("img");
-
-  //   if (currentHash && currentHash < images.length) {
-  //     const images = pagesRef.current.querySelectorAll("img");
-
-  //     images[currentHash].scrollIntoView({
-  //       behavior: "auto",
-  //       block: "start",
-  //     });
-  //   }
-  // }, [imgUrl]);
-
-  const trackImageLoading = () => {
-    if (!images?.length) return;
-    imagesLoading.current += 1;
-
-    if (imagesLoading.current === images.length - 1) {
-      setAllImagesLoaded(true);
-    }
-  };
-
   const handleScrollToNextPage = (index: number) => {
-    if (!pagesRef.current) return;
+    if (!images?.length) return;
 
-    const images = pagesRef.current.querySelectorAll("img");
-
-    if (index + 1 < images.length) {
-      images[index + 1].scrollIntoView({
-        behavior: "auto",
-        block: "start",
-      });
+    if (images[index + 1]) {
+      console.log("1");
+      navigate(`#page=${index + 1}`, { replace: true });
     }
 
     if (index + 1 >= images.length) {
@@ -80,38 +52,50 @@ const ReadContentBase = () => {
     }
   };
 
-  const handleScrollToPreviousPage = (index: number) => {
-    if (!pagesRef.current) return;
+  useEffect(() => {
+    const currentHash = getHash(location.hash);
 
-    const images = pagesRef.current.querySelectorAll("img");
+    if (!currentHash || !pagesRef.current) return;
 
-    if (index - 1 >= 0) {
-      images[index - 1].scrollIntoView({
+    const image = pagesRef?.current.querySelector(`#page-${currentHash}`);
+
+    if (image) {
+      image.scrollIntoView({
         behavior: "auto",
         block: "start",
       });
     }
+  }, [location.hash, images]);
+
+  const handleScrollToPreviousPage = (index: number) => {
+    if (images?.[index - 1]) {
+      navigate(`#page=${index - 1}`, { replace: true });
+    }
   };
 
-  return (
-    <div className="flex-col items-center w-full" ref={pagesRef}>
-      {images?.map((imgLink, index) => (
-        <ImageItem
-          onLoad={trackImageLoading}
-          handleScrollToPreviousPage={handleScrollToPreviousPage}
-          link={imgLink.img}
-          info={imgLink}
-          index={index}
-          key={index}
-          handleScrollToNextPage={handleScrollToNextPage}
-        />
-      ))}
+  const component = (
+    <div className="spinner w-12 h-12 top-0 bottom-0 left-0 right-0 fixed m-auto rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin" />
+  );
 
-      {!allImagesLoaded && (
-        <div className="spinner w-12 h-12 top-0 bottom-0 left-0 right-0 fixed m-auto rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-      )}
-    </div>
+  return (
+    <>
+      <Suspense fallback={component}>
+        <ImageLoader />
+        <div className="flex-col items-center w-full" ref={pagesRef}>
+          {images?.map((imgLink, index) => (
+            <ImageItem
+              handleScrollToPreviousPage={handleScrollToPreviousPage}
+              link={imgLink.img}
+              info={imgLink}
+              index={index}
+              key={index}
+              handleScrollToNextPage={handleScrollToNextPage}
+            />
+          ))}
+        </div>
+      </Suspense>
+    </>
   );
 };
 
-export const ReadContent = trackWindowScroll(ReadContentBase)
+export const ReadContent = trackWindowScroll(ReadContentBase);

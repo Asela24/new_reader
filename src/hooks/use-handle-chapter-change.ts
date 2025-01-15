@@ -6,14 +6,18 @@ import { useCallback } from "react";
 export const useHandleChapterChange = () => {
   const changePath = useNavigate();
 
-  const handleChapterChange = useCallback((newChapter: Pick<Chapter, 'ch' | "vol">, pathname: string) => {
-    const updatedUrl = updateVolAndChUrl({
-      url: pathname,
-      newCh: newChapter.ch,
-      newVol: newChapter.vol,
-    });
-    changePath(updatedUrl);
-  }, [changePath]);
+  const handleChapterChange = useCallback(
+    (newChapter: Pick<Chapter, "ch" | "vol">, pathname: string) => {
+      const updatedUrl = updateVolAndChUrl({
+        url: pathname,
+        newCh: newChapter.ch,
+        newVol: newChapter.vol,
+      });
+
+      changePath(updatedUrl);
+    },
+    [changePath]
+  );
 
   return handleChapterChange;
 };

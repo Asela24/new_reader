@@ -13,5 +13,5 @@ export const updateVolAndChUrl = ({
   let updatedPath = url.replace(volRegex, `vol${newVol}`);
   updatedPath = updatedPath.replace(chRegex, `ch${newCh}`);
 
-  return updatedPath;
+  return `${updatedPath}#page=0`;
 };
