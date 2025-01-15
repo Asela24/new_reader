@@ -1,47 +1,92 @@
-import { useEffect, useState } from "react";
-//TODO: check why we have 2 requests
+import { useState } from "react";
+import { ChapterResponseType } from "../../../../../context/chapter-id/ChapterIdContext";
+//TODO: move hook higher
+export type ChapterFullInfo = {
+  ch: number;
+  title: number;
+  id: number;
+  vol: 2;
+  nextChapterId: number;
+  prevChapterId: number;
+};
+
 export type Chapter = {
-    ch: number,
-    title: number,
-    id: number,
-    vol: 2,
+  ch: number;
+  title: number;
+  id: number;
+  vol: number;
+};
+
+export interface ChapterData {
+  response: ChapterResponseType
 }
 
-export const useGetChapters = () => {
-  interface ChapterData {
-    response: {
-      chapters: {
-        list: Chapter[];
-      };
-    };
+//move out of this file
+export const getMangaId = (url: string) => {
+  const regex = /manga\/([a-zA-Z0-9-]+)\.(\d+)/;
+  const match = url.match(regex);
+
+  if (!match) {
+    throw new Error("no such manga");
   }
 
-  const [data, setData] = useState<ChapterData | null>(null);
+  return match[2];
+};
 
-  const [loading, setLoading] = useState(false);
+export const useGetChapters = () => {
+  const [data, setData] = useState<ChapterData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const mangaId = getMangaId(location.pathname);
 
   const getData = async () => {
-    const result = await fetch("https://desu.win/manga/api/2");
+    let isMounted = true;
 
-    const reader = result.body?.getReader();
+    try {
+      const result = await fetch(`https://desu.win/manga/api/${mangaId}`);
 
-    if (!reader?.read) {
-      return null;
+      if (!result.body) throw new Error("No response body found");
+
+      const reader = result.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let accumulatedString = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+
+        if (value) {
+          accumulatedString += decoder.decode(value, { stream: true });
+
+          try {
+            const parsedResult = JSON.parse(accumulatedString);
+
+            if (isMounted) {
+              setData(parsedResult);
+            }
+          } catch {
+            if (!done) {
+              console.log("Waiting for more chunks to parse JSON...");
+            }
+          }
+        }
+
+        if (done) break;
+      }
+
+      if (isMounted) {
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+
+      if (isMounted) {
+        setLoading(false);
+      }
     }
 
-    const { value } = await reader.read();
-    if (value) {
-      const result = new TextDecoder("utf-8").decode(value);
-      const parsedResult = JSON.parse(result);
-
-      setData(parsedResult);
-      setLoading(false);
-    }
+    return () => {
+      isMounted = false;
+    };
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
-
-  return { response: data?.response };
+  return { response: data?.response, getData, loading, mangaId };
 };

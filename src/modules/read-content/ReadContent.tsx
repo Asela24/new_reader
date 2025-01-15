@@ -1,47 +1,107 @@
-import { useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useChapter } from "./utils/use-chapter";
-import { useChapterIdContext } from "../../context/ChapterIdContext";
+import { ImageItem } from "./components/ImageItem/ImageItem";
+import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
+import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
+import { useLocation, useNavigate } from "react-router-dom";
+import { trackWindowScroll } from "react-lazy-load-image-component";
+import { useAppSelector } from "../../store/hooks";
 
-export const ReadContent = () => {
+const getHash = (hash: string) => {
+  const regex = /=.*?(\d+)/;
+  const match = hash.match(regex);
+
+  if (match?.[1]) {
+    return Number(match[1]);
+  }
+
+  return null;
+};
+
+export const ImageLoader = () => (
+  <div className={`fixed z-10 h-full`}>
+    <div className="flex justify-center flex-col h-full">
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce"></div>
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+      <div className="w-4 h-4 bg-gray-500 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+    </div>
+  </div>
+);
+
+const ReadContentBase = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
-  const { chapterId } = useChapterIdContext();
-  const { data, loading } = useChapter({
-    id: chapterId ?? 49480,
-  });
-  const pages = data?.response?.pages;
-  console.log(data, loading, chapterId);
+  const size = useAppSelector((state) => state.viewSettings.pageSize);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { data } = useChapter();
+  const { nextChapter } = useChapterIdContext();
+  const handleChapterChange = useHandleChapterChange();
 
-  const imgUrl = pages?.list.map((item) => item.img);
+  const images = data?.response?.pages?.list;
 
   const handleScrollToNextPage = (index: number) => {
-    if (!pagesRef.current) return;
+    if (!images?.length) return;
 
-    const images = pagesRef.current.querySelectorAll("img");
-    console.log(pagesRef.current);
-    if (index + 1 < images.length) {
-      images[index + 1].scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    if (images[index + 1]) {
+      console.log("1");
+      navigate(`#page=${index + 1}`, { replace: true });
+    }
+
+    if (index + 1 >= images.length) {
+      if (!nextChapter || nextChapter === -1) return;
+
+      handleChapterChange(nextChapter, location.pathname);
     }
   };
 
-  if (loading && !data?.response) {
-    return (
-        <div className="flex items-center justify-center">
-          <div className="spinner w-12 h-12 rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin"></div>
-        </div>
-    );
-  }
+  useEffect(() => {
+    const currentHash = getHash(location.hash);
+
+    if (!currentHash || !pagesRef.current) return;
+
+    const image = pagesRef?.current.querySelector(`#page-${currentHash}`);
+
+    if (image) {
+      image.scrollIntoView({
+        behavior: "auto",
+        block: "start",
+      });
+    }
+  }, [location.hash, images]);
+
+  const handleScrollToPreviousPage = (index: number) => {
+    if (images?.[index - 1]) {
+      navigate(`#page=${index - 1}`, { replace: true });
+    }
+  };
+
+  const component = (
+    <div className="spinner w-12 h-12 top-0 bottom-0 left-0 right-0 fixed m-auto rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin" />
+  );
+
   return (
-    <div className="flex flex-col items-center" ref={pagesRef}>
-      {imgUrl?.map((imgLink, index) => (
-        <img
-          src={imgLink}
-          key={index}
-          onClick={() => handleScrollToNextPage(index)}
-        />
-      ))}
-    </div>
+    <>
+      <Suspense fallback={component}>
+        <ImageLoader />
+        <div
+          className="flex-col items-center"
+          ref={pagesRef}
+          style={{ width: `${size}%` }}
+        >
+          {images?.map((imgLink, index) => (
+            <ImageItem
+              handleScrollToPreviousPage={handleScrollToPreviousPage}
+              link={imgLink.img}
+              info={imgLink}
+              index={index}
+              key={index}
+              handleScrollToNextPage={handleScrollToNextPage}
+            />
+          ))}
+        </div>
+      </Suspense>
+    </>
   );
 };
+
+export const ReadContent = trackWindowScroll(ReadContentBase);

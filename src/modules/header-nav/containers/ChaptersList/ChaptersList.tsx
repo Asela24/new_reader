@@ -1,28 +1,46 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import { ListItem } from "./components/ListItem";
-import { useGetChapters } from "./utils/use-get-chapters";
-import { useChapterIdContext } from "../../../../context/ChapterIdContext";
+import { useChaptersInfoContext } from "../../../../context/chapters-info/useChaptersInfoContext";
+import { useHandleChapterChange } from "../../../../hooks/use-handle-chapter-change";
+import { useLocation } from "react-router-dom";
+import { useChapterIdContext } from "../../../../context/chapter-id/useChapterIdContext";
 
 export const ChaptersList = () => {
-  const [chapterId, setChapterId] = useState<null | number>(49481);
-  const { response } = useGetChapters();
-  const { setChapterId: setIdContext } = useChapterIdContext();
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const { allChapters } = useChaptersInfoContext();
+  const { chapterId } = useChapterIdContext();
+  const location = useLocation();
+  const handleChapterChange = useHandleChapterChange();
 
-  const handleChapterSelection = (id: number) => {
-    setChapterId(id);
-    setIdContext(id);
-  };
+  useEffect(() => {
+    if (!listRef.current) return;
+
+    const selectedElement = listRef.current.querySelector(
+      `[data-selected="${chapterId}"]`
+    );
+
+    if (selectedElement) {
+      selectedElement.scrollIntoView({
+        block: "end",
+      });
+    }
+  }, []);
 
   return (
-    <li className="text-white max-h-[25vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer">
-      {response?.chapters.list.map((chapter) => (
+    <ul
+      className="text-white max-h-[40vh] overflow-y-auto scrollbar-hide flex flex-col gap-y-[4px] cursor-pointer"
+      ref={listRef}
+    >
+      {allChapters?.chapters.list.map((chapter) => (
         <ListItem
-          chapterInfo={chapter}
+          {...chapter}
           key={chapter.id}
           selected={chapterId === chapter.id}
-          handleChapterSelection={handleChapterSelection}
+          handleChapterSelection={() =>
+            handleChapterChange(chapter, location.pathname)
+          }
         />
       ))}
-    </li>
+    </ul>
   );
 };
