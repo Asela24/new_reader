@@ -5,9 +5,12 @@ import { SettingIcon } from "../../assets/SettingIcon";
 import { WarningIcon } from "../../assets/WarningIcon";
 import { Switcher } from "../Switcher/Switcher";
 import { ChaptersList } from "../../containers/ChaptersList/ChaptersList";
+import { Modal } from "../../../../components/Modal/Modal";
+import { ViewSettings } from "../../../view-settings/ViewSettings";
 
 export const NavBar = () => {
   const [chapterListShow, setChapterListShow] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleChapterListShow = () => {
     setChapterListShow((value) => !value);
@@ -17,6 +20,10 @@ export const NavBar = () => {
     const current = window.location.href;
 
     window.location.href = current.split("/vol")[0];
+  };
+
+  const handleModalOpen = () => {
+    setModalOpen(true);
   };
 
   return (
@@ -33,11 +40,19 @@ export const NavBar = () => {
 
         <div className="flex gap-5">
           <NotificationIcon />
-          <SettingIcon />
+          <button onClick={() => handleModalOpen()}>
+            <SettingIcon />
+          </button>
         </div>
       </div>
 
       {chapterListShow && <ChaptersList />}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Настройки"
+        children={<ViewSettings />}
+      />
     </nav>
   );
 };

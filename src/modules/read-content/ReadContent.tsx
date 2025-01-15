@@ -5,6 +5,7 @@ import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContex
 import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
 import { useLocation, useNavigate } from "react-router-dom";
 import { trackWindowScroll } from "react-lazy-load-image-component";
+import { useAppSelector } from "../../store/hooks";
 
 const getHash = (hash: string) => {
   const regex = /=.*?(\d+)/;
@@ -29,6 +30,7 @@ export const ImageLoader = () => (
 
 const ReadContentBase = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
+  const size = useAppSelector((state) => state.viewSettings.pageSize);
   const location = useLocation();
   const navigate = useNavigate();
   const { data } = useChapter();
@@ -81,7 +83,11 @@ const ReadContentBase = () => {
     <>
       <Suspense fallback={component}>
         <ImageLoader />
-        <div className="flex-col items-center w-full" ref={pagesRef}>
+        <div
+          className="flex-col items-center"
+          ref={pagesRef}
+          style={{ width: `${size}%` }}
+        >
           {images?.map((imgLink, index) => (
             <ImageItem
               handleScrollToPreviousPage={handleScrollToPreviousPage}
