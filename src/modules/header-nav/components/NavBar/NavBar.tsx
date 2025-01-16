@@ -12,7 +12,7 @@ export const NavBar = () => {
   const [chapterListShow, setChapterListShow] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [showHeader, setShowHeader] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
