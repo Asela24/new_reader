@@ -1,5 +1,11 @@
 import RangeComponent from "./components/PageRangeComponent";
+import { ThemeSelector } from "./components/ThemeSelector";
 
 export const ViewSettings = () => {
-  return <RangeComponent />;
+  return (
+    <div>
+      <ThemeSelector />
+      <RangeComponent />;
+    </div>
+  );
 };
