@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useChapter } from "./utils/use-chapter";
 import { ImageItem } from "./components/ImageItem/ImageItem";
 import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
@@ -33,6 +33,7 @@ const ReadContentBase = () => {
   const size = useAppSelector((state) => state.viewSettings.pageSize);
   const location = useLocation();
   const navigate = useNavigate();
+  const [selectedPage, setSelectedPage] = useState(getHash(location.hash));
   const { data } = useChapter();
   const { nextChapter } = useChapterIdContext();
   const handleChapterChange = useHandleChapterChange();
@@ -43,8 +44,8 @@ const ReadContentBase = () => {
     if (!images?.length) return;
 
     if (images[index + 1]) {
-      console.log("1");
       navigate(`#page=${index + 1}`, { replace: true });
+      setSelectedPage(index + 1)
     }
 
     if (index + 1 >= images.length) {
@@ -55,11 +56,9 @@ const ReadContentBase = () => {
   };
 
   useEffect(() => {
-    const currentHash = getHash(location.hash);
+    if (!selectedPage || !pagesRef.current) return;
 
-    if (!currentHash || !pagesRef.current) return;
-
-    const image = pagesRef?.current.querySelector(`#page-${currentHash}`);
+    const image = pagesRef?.current.querySelector(`#page-${selectedPage}`);
 
     if (image) {
       image.scrollIntoView({
@@ -67,14 +66,16 @@ const ReadContentBase = () => {
         block: "start",
       });
     }
-  }, [location.hash, images]);
+  }, [images, selectedPage]);
 
   const handleScrollToPreviousPage = (index: number) => {
     if (images?.[index - 1]) {
       navigate(`#page=${index - 1}`, { replace: true });
+      setSelectedPage(index - 1);
     }
   };
 
+  //update this
   const component = (
     <div className="spinner w-12 h-12 top-0 bottom-0 left-0 right-0 fixed m-auto rounded-full border-4 border-t-[#1d78b7] border-gray-200 animate-spin" />
   );
