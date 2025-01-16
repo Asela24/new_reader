@@ -11,7 +11,7 @@ export const MainContent = () => {
   //   });
   // };
   return (
-    <div className="flex justify-center grow">
+    <main className="flex justify-center grow mt-[52px]">
       {/* <div key={cookies.read_theme}>
         <input
           type="checkbox"
@@ -23,6 +23,6 @@ export const MainContent = () => {
         <label>Поменять тему</label>
       </div> */}
       <ReadContent/>
-    </div>
+    </main>
   );
 };
