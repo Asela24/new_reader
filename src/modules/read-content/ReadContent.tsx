@@ -1,11 +1,13 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useChapter } from "./utils/use-chapter";
-import { ImageItem } from "./components/ImageItem/ImageItem";
 import { useChapterIdContext } from "../../context/chapter-id/useChapterIdContext";
 import { useHandleChapterChange } from "../../hooks/use-handle-chapter-change";
 import { useLocation, useNavigate } from "react-router-dom";
 import { trackWindowScroll } from "react-lazy-load-image-component";
 import { useAppSelector } from "../../store/hooks";
+import { VerticalReadMode } from "./components/VerticalReadMode/VerticalReadMode";
+import { ReaderModeType } from "../../store/viewSettingsSlice";
+import { PageReadMode } from "./components/PageReadMode/PageReadMode";
 
 const getHash = (hash: string) => {
   const regex = /=.*?(\d+)/;
@@ -15,7 +17,7 @@ const getHash = (hash: string) => {
     return Number(match[1]);
   }
 
-  return null;
+  return 0;
 };
 
 export const ImageLoader = () => (
@@ -30,13 +32,19 @@ export const ImageLoader = () => (
 
 const ReadContentBase = () => {
   const pagesRef = useRef<HTMLDivElement | null>(null);
-  const size = useAppSelector((state) => state.viewSettings.pageSize);
+  const { pageSize: size, readerMode } = useAppSelector(
+    (state) => state.viewSettings
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedPage, setSelectedPage] = useState(getHash(location.hash));
   const { data } = useChapter();
-  const { nextChapter } = useChapterIdContext();
+  const { nextChapter, prevChapter, chapterId } = useChapterIdContext();
   const handleChapterChange = useHandleChapterChange();
+
+  useEffect(() => {
+    setSelectedPage(0)
+  }, [chapterId])
 
   const images = data?.response?.pages?.list;
 
@@ -45,7 +53,7 @@ const ReadContentBase = () => {
 
     if (images[index + 1]) {
       navigate(`#page=${index + 1}`, { replace: true });
-      setSelectedPage(index + 1)
+      setSelectedPage(index + 1);
     }
 
     if (index + 1 >= images.length) {
@@ -66,12 +74,18 @@ const ReadContentBase = () => {
         block: "start",
       });
     }
-  }, [images, selectedPage]);
+  }, [images, selectedPage, readerMode]);
 
   const handleScrollToPreviousPage = (index: number) => {
     if (images?.[index - 1]) {
       navigate(`#page=${index - 1}`, { replace: true });
       setSelectedPage(index - 1);
+    }
+
+    if (index - 1 < 0) {
+      if (!prevChapter || prevChapter === -1) return;
+
+      handleChapterChange(prevChapter, location.pathname)
     }
   };
 
@@ -89,16 +103,20 @@ const ReadContentBase = () => {
           ref={pagesRef}
           style={{ width: `${size}%` }}
         >
-          {images?.map((imgLink, index) => (
-            <ImageItem
-              handleScrollToPreviousPage={handleScrollToPreviousPage}
-              link={imgLink.img}
-              info={imgLink}
-              index={index}
-              key={index}
+          {readerMode === ReaderModeType.Page ? (
+            <PageReadMode
+              currentPage={images?.[selectedPage]}
+              index={selectedPage}
               handleScrollToNextPage={handleScrollToNextPage}
+              handleScrollToPreviousPage={handleScrollToPreviousPage}
             />
-          ))}
+          ) : (
+            <VerticalReadMode
+              images={images}
+              handleScrollToNextPage={handleScrollToNextPage}
+              handleScrollToPreviousPage={handleScrollToPreviousPage}
+            />
+          )}
         </div>
       </Suspense>
     </>

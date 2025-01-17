@@ -1,11 +1,16 @@
-import { configureStore } from "@reduxjs/toolkit";
-import viewSettingsReducer from './viewSettingsSlice'
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import viewSettingsReducer, { updateCookieMiddleware } from './viewSettingsSlice'
+
+export const rootReducer = combineReducers({
+    viewSettings: viewSettingsReducer,
+})
 
 export const store = configureStore({
-    reducer: {
-        viewSettings: viewSettingsReducer,
-    },
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => 
+        getDefaultMiddleware().concat(updateCookieMiddleware)
 })
+
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch
